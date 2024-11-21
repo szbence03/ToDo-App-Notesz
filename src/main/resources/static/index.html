@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do Lista</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 8px 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container input {
+            padding: 8px;
+            margin-right: 10px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+<h1>To-Do App / Notesz</h1>
+<div class="form-container">
+    <input type="text" id="todoInput" placeholder="Új teendő hozzáadása">
+    <button onclick="addTodo()">Hozzáadás</button>
+    <button onclick="deleteLastTodo()">Legutóbbi törlése</button>
+</div>
+<ul id="todoList">
+</ul>
+
+<script>
+         const apiUrl = '/api/todos';
+
+        function fetchTodos() {
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (!Array.isArray(data)) {
+                console.error('Nem tömböt kaptunk vissza az API-tól:', data);
+                return;
+            }
+
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            data.forEach(todo => {
+                const li = document.createElement('li');
+                li.textContent = todo.leiras;
+                todoList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Hiba a teendők lekérésekor:', error));
+}
+
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const leiras = input.value.trim();
+
+            if (leiras === '') {
+                alert('A teendő nem lehet üres!');
+                return;
+            }
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(leiras),
+            })
+            .then(() => {
+                input.value = '';
+                fetchTodos();
+            })
+            .catch(error => console.error('Hiba a teendő hozzáadásakor:', error));
+        }
+
+        function deleteLastTodo() {
+            fetch(apiUrl, {
+                method: 'DELETE',
+            })
+            .then(() => fetchTodos())
+            .catch(error => console.error('Hiba a teendő törlésekor:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchTodos);
+
+
+    </script>
+</body>
+</html>
