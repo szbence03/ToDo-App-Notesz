@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.Duration;
 
 @SpringBootTest
-public class LoginStepDefinitions {
+public class StepDefinitions {
     private final int port = 8080;
     WebDriver driver;
 
@@ -28,7 +28,7 @@ public class LoginStepDefinitions {
         SpringApplication.run(TodoAppApplication.class);
 
         FirefoxOptions options = new FirefoxOptions();
-//        options.addArguments("--headless");
+        options.addArguments("--headless");
         driver = new FirefoxDriver(options);
     }
 
